@@ -5,7 +5,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-public class HttpResponse {
+public class HttpResponse extends HttpCommon {
     private final String body;
     private Map<String, String> headers = new HashMap<>();
     private int statusCode;
@@ -17,7 +17,7 @@ public class HttpResponse {
         this.statusCode = readStatusCode();
 
         String headerLine, headerName, headerValue;
-        while(!(headerLine = readLine()).equals("")){
+        while(!(headerLine = readLine(inputStream)).equals("")){
             int colonPos = headerLine.indexOf(":");
 
             headerName = headerLine.substring(0, colonPos).trim();
@@ -25,30 +25,17 @@ public class HttpResponse {
 
             headers.put(headerName, headerValue);
         }
-        this.body = readLine();
+        this.body = readLine(inputStream);
 
     }
 
-    public String readLine() throws IOException {
-        StringBuilder line = new StringBuilder();
-        int c;
-        while((c = inputStream.read()) != -1){
-            if (c == '\r'){
-                c = inputStream.read();
-                assert c == '\n';
-                break;
-            }
-            line.append((char)c);
-        }
-        return line.toString();
-    }
 
     public int getStatusCode() {
         return statusCode;
     }
 
     public int readStatusCode() throws IOException {
-        String[] parts = readLine().split(" ");
+        String[] parts = readLine(inputStream).split(" ");
         return Integer.parseInt(parts[1]);
     }
 
