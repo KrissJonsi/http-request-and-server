@@ -12,41 +12,29 @@ import java.net.Socket;
 public class HttpServer {
 
     public static void main(String[] args) {
-        try {
-            OutputStream stream = new ByteArrayOutputStream();
-            HttpRequest request = new HttpRequest("google.com", 443, "/search");
-
-            //request.setStatus(HttpStatus.ImaTeapot);
-
-            request.setBody("hello world!");
-            request.writeToStream(stream);
-
-
-            System.out.print(stream.toString());
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        /*
         HttpServer server = new HttpServer();
-        server.runServer(8080);*/
+        server.runServer(8080);
     }
 
-    private void listen(ServerSocket serverSocket) {
+    private void listen(ServerSocket serverSocket) throws IOException {
         while (true) {
+            Socket socket = serverSocket.accept();
             new Thread(() -> {
-                try (Socket socket = serverSocket.accept()) {
-                    InputStream inputStream = socket.getInputStream(); // Request
-                    OutputStream outputStream = socket.getOutputStream(); // Response
+                try {
+                    HttpRequest request = new HttpRequest(socket.getInputStream());
+                    System.out.println(String.format("%s %s", request.getMethod().name(), request.getRequestPath()));
+                    HttpResponse response = new HttpResponse();
 
-                    HttpRequest request = new HttpRequest(inputStream);
+                    response.setStatus(HttpStatus.ImaTeapot);
+                    response.setBody("hello fam");
 
-
+                    OutputStream outputStream = socket.getOutputStream();
+                    response.writeToStream(outputStream);
+                    outputStream.flush();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-            });
+            }).start();
         }
     }
 

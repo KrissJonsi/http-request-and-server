@@ -33,13 +33,12 @@ public abstract class HttpCommon {
         return line.toString();
     }
 
-    protected String readBody(int length, InputStream inputStream){
+    protected String readBody(int length, InputStream stream) throws IOException {
         StringBuilder body = new StringBuilder();
         for(int i = 0; i < length; i++){
-
+            body.append(stream.read());
         }
-        //TODO ..
-        return "hello world yaya";
+        return body.toString();
     }
 
     protected Map<String, String> readHeaders(InputStream inputStream) throws IOException {
@@ -74,6 +73,10 @@ public abstract class HttpCommon {
         this.body = body;
     }
 
+    public String getHeader(String headerName){
+        return headers.get(headerName);
+    }
+
     private void writeHeaders(OutputStream stream) throws IOException {
         for (Map.Entry<String, String> header : headers.entrySet()) {
             writeLine(String.format("%s: %s", header.getKey(), header.getValue()), stream);
@@ -81,9 +84,15 @@ public abstract class HttpCommon {
         writeLine("", stream);
     }
 
+    public void putHeader(String headerName, String headerValue){
+        headers.put(headerName, headerValue);
+    }
+
     protected void writeLine(String line, OutputStream outputStream) throws IOException {
         outputStream.write((line + "\r\n").getBytes());
     }
+
+
 
     protected abstract void writeFirstLine(OutputStream stream) throws IOException;
 }

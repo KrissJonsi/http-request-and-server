@@ -5,22 +5,16 @@ import no.kristiania.pgr200.assignment.one.Enums.HttpStatus;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.HashMap;
-import java.util.Map;
 
 public class HttpResponse extends HttpCommon {
     private HttpStatus status;
 
 
     public HttpResponse(InputStream inputStream) throws IOException {
-
         String[] parts = readLine(inputStream).split(" ");
         this.status = HttpStatus.valueOf(Integer.parseInt(parts[1]));
         this.headers = readHeaders(inputStream);
-
-
-        this.body = readLine(inputStream);
-
+        this.body = readBody(Integer.parseInt(headers.get("content-length")), inputStream);
     }
 
     public HttpResponse() {
@@ -36,14 +30,6 @@ public class HttpResponse extends HttpCommon {
 
     public int getStatusCode() {
         return status.getStatusCode();
-    }
-
-    public String getHeader(String headerName){
-        return headers.get(headerName);
-    }
-
-    public String getBody(){
-        return body;
     }
 
     @Override

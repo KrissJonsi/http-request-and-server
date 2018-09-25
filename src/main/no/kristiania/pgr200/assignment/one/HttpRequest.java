@@ -22,6 +22,14 @@ public class HttpRequest extends HttpCommon {
         this.requestPath = requestPath;
     }
 
+    public String getRequestPath() {
+        return requestPath;
+    }
+
+    public HttpMethod getMethod() {
+        return method;
+    }
+
     public HttpRequest(InputStream inputStream) throws IOException {
         String line = readLine(inputStream);
         String[] parts = line.split(" ", 3);
