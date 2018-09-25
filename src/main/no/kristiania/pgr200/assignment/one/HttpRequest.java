@@ -66,7 +66,6 @@ public class HttpRequest extends HttpCommon {
             }
             OutputStream outputStream = socket.getOutputStream();
             writeToStream(outputStream);
-            //TODO: implement sending body
             outputStream.flush();
 
             response = new HttpResponse(socket.getInputStream());

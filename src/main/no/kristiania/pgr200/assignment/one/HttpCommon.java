@@ -36,7 +36,7 @@ public abstract class HttpCommon {
     protected String readBody(int length, InputStream stream) throws IOException {
         StringBuilder body = new StringBuilder();
         for(int i = 0; i < length; i++){
-            body.append(stream.read());
+            body.append((char) stream.read());
         }
         return body.toString();
     }
@@ -46,7 +46,7 @@ public abstract class HttpCommon {
         String line;
         while (!(line = readLine(inputStream)).equals("")) {
             String[] parts = line.split(": ", 2);
-            headers.put(parts[0].trim(), parts[1].trim());
+            headers.put(parts[0].trim().toLowerCase(), parts[1].trim());
         }
         return headers;
     }
@@ -58,7 +58,10 @@ public abstract class HttpCommon {
         }
 
         writeHeaders(stream);
-        byte[] body = this.body.getBytes("UTF-8");
+        byte[] body = new byte[]{};
+        if (this.body != null) {
+            this.body.getBytes("UTF-8");
+        }
 
         if (body.length > 0) {
             stream.write(body);
@@ -74,7 +77,7 @@ public abstract class HttpCommon {
     }
 
     public String getHeader(String headerName){
-        return headers.get(headerName);
+        return headers.get(headerName.toLowerCase());
     }
 
     private void writeHeaders(OutputStream stream) throws IOException {

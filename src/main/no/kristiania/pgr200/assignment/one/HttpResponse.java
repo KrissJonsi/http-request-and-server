@@ -14,7 +14,12 @@ public class HttpResponse extends HttpCommon {
         String[] parts = readLine(inputStream).split(" ");
         this.status = HttpStatus.valueOf(Integer.parseInt(parts[1]));
         this.headers = readHeaders(inputStream);
-        this.body = readBody(Integer.parseInt(headers.get("content-length")), inputStream);
+        int contentLength = 0;
+        if (headers.containsKey("content-length")) {
+            contentLength = Integer.parseInt(headers.get("content-length"));
+        }
+
+        this.body = readBody(contentLength, inputStream);
     }
 
     public HttpResponse() {
