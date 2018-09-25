@@ -14,11 +14,10 @@ public class HttpRequest extends HttpCommon {
     private String host;
     private int port;
     private String requestPath;
-    private Map<String, String> headers = new HashMap<>();
     private HttpMethod method = HttpMethod.GET;
 
     public HttpRequest(String host, int port, String requestPath) {
-        this.host = host;
+        this.setHost(host);
         this.port = port;
         this.requestPath = requestPath;
     }
@@ -33,6 +32,19 @@ public class HttpRequest extends HttpCommon {
         this.host = headers.get("Host");
     }
 
+    public String getHost() {
+        return host;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
+        this.headers.put("Host", host);
+    }
+
+    public HttpRequest() {
+
+    }
+
     public HttpResponse execute() {
         HttpResponse response = null;
 
@@ -44,10 +56,8 @@ public class HttpRequest extends HttpCommon {
             if(!headers.containsKey("Connection")){
                 headers.put("Connection", "close");
             }
-
             OutputStream outputStream = socket.getOutputStream();
-            writeRequestLine(outputStream);
-            writeHeaders(headers, outputStream);
+            writeToStream(outputStream);
             //TODO: implement sending body
             outputStream.flush();
 
@@ -61,20 +71,8 @@ public class HttpRequest extends HttpCommon {
         return response;
     }
 
-    private void writeHeaders(Map<String, String> headers, OutputStream outputStream) throws IOException {
-        for (Map.Entry<String, String> header : headers.entrySet()) {
-            writeLine(String.format("%s: %s", header.getKey(), header.getValue()), outputStream);
-        }
-        writeLine("", outputStream);
+    @Override
+    protected void writeFirstLine(OutputStream stream) throws IOException {
+        writeLine(String.format("%s %s %s", method.name(), requestPath, "HTTP/1.1"), stream);
     }
-
-    private void writeRequestLine(OutputStream outputStream) throws IOException {
-        writeLine(String.format("%s %s %s", method.name(), requestPath, "HTTP/1.1"), outputStream);
-    }
-
-    private void writeLine(String line, OutputStream outputStream) throws IOException {
-        outputStream.write((line + "\r\n").getBytes());
-    }
-
-
 }

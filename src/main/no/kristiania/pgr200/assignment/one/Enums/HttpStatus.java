@@ -42,7 +42,7 @@ public enum HttpStatus {
     UnsupportedMediaType(415, "Unsupported Media Type"),
     RequestedRangeNotSatisfiable(416, "Requested Range Not Satisfiable"),
     ExpectationFailed(417, "Expectation Failed"),
-    ImaTeapot(418, "I'mateapot"),
+    ImaTeapot(418, "I'ma teapot"),
     MisdirectedRequest(421, "Misdirected Request"),
     UnprocessableEntity(422, "Unprocessable Entity"),
     Locked(423, "Locked"),

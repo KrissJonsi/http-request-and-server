@@ -1,42 +1,41 @@
 package no.kristiania.pgr200.assignment.one;
 
+import no.kristiania.pgr200.assignment.one.Enums.HttpStatus;
+
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
 public class HttpResponse extends HttpCommon {
-    private final String body;
-    private Map<String, String> headers = new HashMap<>();
-    private int statusCode;
-    private InputStream inputStream;
+    private HttpStatus status;
 
 
     public HttpResponse(InputStream inputStream) throws IOException {
-        this.inputStream = inputStream;
-        this.statusCode = readStatusCode();
 
-        String headerLine, headerName, headerValue;
-        while(!(headerLine = readLine(inputStream)).equals("")){
-            int colonPos = headerLine.indexOf(":");
+        String[] parts = readLine(inputStream).split(" ");
+        this.status = HttpStatus.valueOf(Integer.parseInt(parts[1]));
+        this.headers = readHeaders(inputStream);
 
-            headerName = headerLine.substring(0, colonPos).trim();
-            headerValue = headerLine.substring(colonPos+1).trim();
 
-            headers.put(headerName, headerValue);
-        }
         this.body = readLine(inputStream);
 
     }
 
-
-    public int getStatusCode() {
-        return statusCode;
+    public HttpResponse() {
     }
 
-    public int readStatusCode() throws IOException {
-        String[] parts = readLine(inputStream).split(" ");
-        return Integer.parseInt(parts[1]);
+    public HttpStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(HttpStatus status) {
+        this.status = status;
+    }
+
+    public int getStatusCode() {
+        return status.getStatusCode();
     }
 
     public String getHeader(String headerName){
@@ -45,5 +44,10 @@ public class HttpResponse extends HttpCommon {
 
     public String getBody(){
         return body;
+    }
+
+    @Override
+    protected void writeFirstLine(OutputStream stream) throws IOException {
+        writeLine(String.format("%s %d %s", "HTTP/1.1", status.getStatusCode(), status.getName()), stream);
     }
 }

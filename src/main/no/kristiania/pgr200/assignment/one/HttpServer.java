@@ -1,5 +1,8 @@
 package no.kristiania.pgr200.assignment.one;
 
+import no.kristiania.pgr200.assignment.one.Enums.HttpStatus;
+
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -9,8 +12,25 @@ import java.net.Socket;
 public class HttpServer {
 
     public static void main(String[] args) {
+        try {
+            OutputStream stream = new ByteArrayOutputStream();
+            HttpRequest request = new HttpRequest("google.com", 443, "/search");
+
+            //request.setStatus(HttpStatus.ImaTeapot);
+
+            request.setBody("hello world!");
+            request.writeToStream(stream);
+
+
+            System.out.print(stream.toString());
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        /*
         HttpServer server = new HttpServer();
-        server.runServer(8080);
+        server.runServer(8080);*/
     }
 
     private void listen(ServerSocket serverSocket) {
