@@ -36,9 +36,10 @@ public abstract class HttpCommon {
     protected String readBody(int length, InputStream inputStream){
         StringBuilder body = new StringBuilder();
         for(int i = 0; i < length; i++){
-            //TODO ..
-            return "hello world yaya";
+
         }
+        //TODO ..
+        return "hello world yaya";
     }
 
     protected Map<String, String> readHeaders(InputStream inputStream) throws IOException {
@@ -56,8 +57,10 @@ public abstract class HttpCommon {
         if (this.body != null && (this.body.getBytes("UTF-8").length > 0)) {
             headers.put("Content-Length", String.valueOf(this.body.getBytes("UTF8").length));
         }
+
         writeHeaders(stream);
         byte[] body = this.body.getBytes("UTF-8");
+
         if (body.length > 0) {
             stream.write(body);
         }
