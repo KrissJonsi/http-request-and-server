@@ -1,6 +1,10 @@
 Innlevering #1: HTTP Server
 ===========================
 
+# Starting the server
+To start the server you just run HttpServer::Main, default port is 8080 so just access it on http://localhost:8080
+
+
 Oppgaven:
 ---------
 
@@ -62,6 +66,7 @@ Vurderingskriterier:
   * Forskjellige status codes
   * Forskjellige HTTP headere
   * Forskjellige HTTP bodies
+
 
 
 

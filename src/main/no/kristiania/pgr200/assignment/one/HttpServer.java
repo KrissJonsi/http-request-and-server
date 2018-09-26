@@ -1,5 +1,6 @@
 package no.kristiania.pgr200.assignment.one;
 
+import no.kristiania.pgr200.assignment.one.Enums.HttpMethod;
 import no.kristiania.pgr200.assignment.one.Enums.HttpStatus;
 
 import java.io.ByteArrayOutputStream;
@@ -30,20 +31,32 @@ public class HttpServer {
                     System.out.println(String.format("%s %s", request.getMethod().name(), request.getRequestPath()));
                     HttpResponse response = new HttpResponse();
 
-                    HttpQuery query = request.getPath().getQuery();
-                    String requestStatus = query.getParameter("status");
-                    String requestBody = query.getParameter("body");
-                    String requestLocation = query.getParameter("location");
+                    if (request.getRequestPath().matches("^/echo(\\?.*)?")) {
+                        HttpQuery query = request.getPath().getQuery();
+                        if (request.getMethod() == HttpMethod.POST && request.getBody() != null && request.getHeader("content-type").equals("application/x-www-form-urlencoded")) {
+                            query = new HttpQuery(request.getBody());
+                        }
+                        String requestStatus = query.getParameter("status");
+                        String requestBody = query.getParameter("body");
+                        String requestLocation = query.getParameter("location");
+                        String requestContentType = query.getParameter("content-type");
 
-                    HttpStatus status = HttpStatus.OK;
-                    if (requestStatus != null) {
-                        status = HttpStatus.valueOf(Integer.parseInt(requestStatus));
-                    }
+                        HttpStatus status = HttpStatus.OK;
+                        if (requestStatus != null) {
+                            status = HttpStatus.valueOf(Integer.parseInt(requestStatus));
+                        }
 
-                    response.setStatus(status);
-                    response.setBody(requestBody);
-                    if(requestLocation != null) {
-                        response.putHeader("location", requestLocation);
+                        response.setStatus(status);
+                        response.setBody(requestBody);
+                        if(requestLocation != null) {
+                            response.putHeader("location", requestLocation);
+                        }
+                        if (requestContentType != null) {
+                            response.putHeader("content-type", requestContentType);
+                        }
+                    } else {
+                        response.setStatus(HttpStatus.OK);
+                        response.setBody("Try /echo instead");
                     }
 
                     OutputStream outputStream = socket.getOutputStream();
@@ -63,7 +76,7 @@ public class HttpServer {
     public void runServer(int port) throws IOException {
         ServerSocket socket = new ServerSocket(port);
         this.port = socket.getLocalPort();
-        System.out.println("Server now running on port: " + socket.getLocalPort());
+        System.out.println("Server now running on http://localhost:" + socket.getLocalPort());
         listen(socket);
     }
 

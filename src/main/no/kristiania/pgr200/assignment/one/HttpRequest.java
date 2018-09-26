@@ -12,6 +12,11 @@ public class HttpRequest extends HttpCommon {
     private String host;
     private int port;
     private HttpPath path;
+
+    public void setMethod(HttpMethod method) {
+        this.method = method;
+    }
+
     private HttpMethod method = HttpMethod.GET;
 
     public HttpRequest(String host, int port, String requestPath) {
@@ -31,6 +36,12 @@ public class HttpRequest extends HttpCommon {
         this.path = new HttpPath(parts[1]);
         this.headers = readHeaders(inputStream);
         this.host = headers.get("Host");
+        int contentLength = 0;
+        if (headers.containsKey("content-length")) {
+            contentLength = Integer.parseInt(headers.get("content-length"));
+        }
+
+        this.body = readBody(contentLength, inputStream);
     }
     public HttpRequest() {
 
@@ -79,6 +90,9 @@ public class HttpRequest extends HttpCommon {
             }
             if (!headers.containsKey("Connection")) {
                 headers.put("Connection", "close");
+            }
+            if (!headers.containsKey("content-length") && body != null) {
+                headers.put("content-length", String.valueOf(body.getBytes("UTF-8").length));
             }
             OutputStream outputStream = socket.getOutputStream();
             writeToStream(outputStream);
