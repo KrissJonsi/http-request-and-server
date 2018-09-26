@@ -30,8 +30,21 @@ public class HttpServer {
                     System.out.println(String.format("%s %s", request.getMethod().name(), request.getRequestPath()));
                     HttpResponse response = new HttpResponse();
 
-                    response.setStatus(HttpStatus.ImaTeapot);
-                    response.setBody("hello fam");
+                    HttpQuery query = request.getPath().getQuery();
+                    String requestStatus = query.getParameter("status");
+                    String requestBody = query.getParameter("body");
+                    String requestLocation = query.getParameter("location");
+
+                    HttpStatus status = HttpStatus.OK;
+                    if (requestStatus != null) {
+                        status = HttpStatus.valueOf(Integer.parseInt(requestStatus));
+                    }
+
+                    response.setStatus(status);
+                    response.setBody(requestBody);
+                    if(requestLocation != null) {
+                        response.putHeader("location", requestLocation);
+                    }
 
                     OutputStream outputStream = socket.getOutputStream();
                     response.writeToStream(outputStream);

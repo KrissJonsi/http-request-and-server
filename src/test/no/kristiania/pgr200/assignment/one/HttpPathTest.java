@@ -18,7 +18,7 @@ public class HttpPathTest {
 
     @Test
     public void shouldParseUrlWithoutQuery() {
-        HttpPath path = new HttpPath("/myapp/echo?status=400&body=vi%20plukker%20bl%C3%A5b%C3%A6r");
+        HttpPath path = new HttpPath("/myapp/echo");
         assertThat(path.getPath()).isEqualTo("/myapp/echo");
         assertThat(path.getPathParts()).containsExactly("myapp", "echo");
         assertThat(path.getQuery()).isNull();
@@ -34,7 +34,7 @@ public class HttpPathTest {
         path.setQuery(query);
 
         assertThat(path.toString()).startsWith("/echo?");
-        assertThat(path.toString()).containsOnlyOnce("body=Hello%20World!");
+        assertThat(path.toString()).containsOnlyOnce("body=Hello+World%21");
         assertThat(path.toString()).containsOnlyOnce("status=404");
     }
 

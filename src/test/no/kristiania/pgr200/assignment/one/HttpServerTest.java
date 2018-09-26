@@ -30,7 +30,9 @@ public class HttpServerTest {
         request.setHost("127.0.0.1");
         request.setPort(server.getPort());
         HttpPath path = new HttpPath("/echo");
-        path.getQuery().putParameter("status", String.valueOf(HttpStatus.ImaTeapot.getStatusCode()));
+        HttpQuery query = new HttpQuery();
+        query.putParameter("status", String.valueOf(HttpStatus.ImaTeapot.getStatusCode()));
+        path.setQuery(query);
         request.setRequestPath(path.toString());
 
         HttpResponse response = request.execute();
@@ -44,13 +46,16 @@ public class HttpServerTest {
         request.setHost("127.0.0.1");
         request.setPort(server.getPort());
         HttpPath path = new HttpPath("/echo");
-        path.getQuery().putParameter("status", String.valueOf(HttpStatus.TemporaryRedirect.getStatusCode()));
-        path.getQuery().putParameter("location", "");
+        HttpQuery query = new HttpQuery();
+        query.putParameter("status", String.valueOf(HttpStatus.TemporaryRedirect.getStatusCode()));
+        query.putParameter("location", "https://google.com");
+        path.setQuery(query);
         request.setRequestPath(path.toString());
 
         HttpResponse response = request.execute();
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.ImaTeapot.getStatusCode());
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.TemporaryRedirect.getStatusCode());
+        assertThat(response.getHeader("location")).isEqualTo("https://google.com");
     }
 
     @Test
@@ -59,8 +64,10 @@ public class HttpServerTest {
         request.setHost("127.0.0.1");
         request.setPort(server.getPort());
         HttpPath path = new HttpPath("/echo");
-        path.getQuery().putParameter("status", String.valueOf(HttpStatus.OK.getStatusCode()));
-        path.getQuery().putParameter("body", "Hello World!");
+        HttpQuery query = new HttpQuery();
+        query.putParameter("status", String.valueOf(HttpStatus.OK.getStatusCode()));
+        query.putParameter("body", "Hello World!");
+        path.setQuery(query);
         request.setRequestPath(path.toString());
 
         HttpResponse response = request.execute();

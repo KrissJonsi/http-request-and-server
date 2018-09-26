@@ -2,7 +2,6 @@ package no.kristiania.pgr200.assignment.one;
 
 import no.kristiania.pgr200.assignment.one.Enums.HttpMethod;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -12,14 +11,15 @@ import java.net.UnknownHostException;
 public class HttpRequest extends HttpCommon {
     private String host;
     private int port;
-    private String requestPath;
+    private HttpPath path;
     private HttpMethod method = HttpMethod.GET;
 
     public HttpRequest(String host, int port, String requestPath) {
         this.setHost(host);
         this.port = port;
-        this.requestPath = requestPath;
+        this.path = new HttpPath(requestPath);
     }
+
     public HttpRequest(InputStream inputStream) throws IOException {
         String line = readLine(inputStream);
         while (line.isEmpty()) {
@@ -28,13 +28,20 @@ public class HttpRequest extends HttpCommon {
         String[] parts = line.split(" ", 3);
 
         this.method = HttpMethod.valueOf(parts[0].toUpperCase());
-        this.requestPath = parts[1];
+        this.path = new HttpPath(parts[1]);
         this.headers = readHeaders(inputStream);
         this.host = headers.get("Host");
     }
-
     public HttpRequest() {
 
+    }
+
+    public HttpPath getPath() {
+        return path;
+    }
+
+    public void setPath(HttpPath path) {
+        this.path = path;
     }
 
     public void setPort(int port) {
@@ -42,11 +49,11 @@ public class HttpRequest extends HttpCommon {
     }
 
     public String getRequestPath() {
-        return requestPath;
+        return this.path.toString();
     }
 
     public void setRequestPath(String requestPath) {
-        this.requestPath = requestPath;
+        this.path = new HttpPath(requestPath);
     }
 
     public HttpMethod getMethod() {
@@ -89,6 +96,6 @@ public class HttpRequest extends HttpCommon {
 
     @Override
     protected void writeFirstLine(OutputStream stream) throws IOException {
-        writeLine(String.format("%s %s %s", method.name(), requestPath, "HTTP/1.1"), stream);
+        writeLine(String.format("%s %s %s", method.name(), this.path.toString(), "HTTP/1.1"), stream);
     }
 }

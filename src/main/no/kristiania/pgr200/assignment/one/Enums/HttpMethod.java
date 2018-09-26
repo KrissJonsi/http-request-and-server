@@ -1,6 +1,6 @@
 package no.kristiania.pgr200.assignment.one.Enums;
 
-public enum  HttpMethod {
+public enum HttpMethod {
     GET,
     POST,
     PUT,

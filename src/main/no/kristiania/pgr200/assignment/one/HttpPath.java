@@ -2,7 +2,6 @@ package no.kristiania.pgr200.assignment.one;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-import java.applet.AppletStub;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -16,19 +15,13 @@ public class HttpPath {
     public HttpPath(String rawUri) {
         int indexOfQ = rawUri.indexOf("?");
         if (indexOfQ == -1){
-            indexOfQ = rawUri.length() - 1;
+            indexOfQ = rawUri.length();
         }
         path = rawUri.substring(0, indexOfQ);
 
-        List<String> pathPartsList = new ArrayList<>(Arrays.asList(path.split("/")));
-        pathPartsList.removeIf(String::isEmpty);
-        pathParts = pathPartsList.toArray(new String[]{});
-        if (indexOfQ == rawUri.length() - 1) {
-            query = new HttpQuery("");
-        } else {
+        if (indexOfQ != rawUri.length()) {
             query = new HttpQuery(rawUri.substring(indexOfQ+1));
         }
-
     }
 
     public HttpPath() {
@@ -39,6 +32,9 @@ public class HttpPath {
     }
 
     public String[] getPathParts() {
+        List<String> pathPartsList = new ArrayList<>(Arrays.asList(path.split("/")));
+        pathPartsList.removeIf(String::isEmpty);
+        pathParts = pathPartsList.toArray(new String[]{});
         return pathParts;
     }
 
@@ -47,10 +43,19 @@ public class HttpPath {
     }
 
     public void setPath(String path) {
-        throw new NotImplementedException();
+        this.path = path;
     }
 
     public void setQuery(HttpQuery query) {
-        throw new NotImplementedException();
+        this.query = query;
+    }
+
+    @Override
+    public String toString() {
+        if(query != null) {
+            return (path + "?" + query);
+        } else {
+            return path;
+        }
     }
 }
