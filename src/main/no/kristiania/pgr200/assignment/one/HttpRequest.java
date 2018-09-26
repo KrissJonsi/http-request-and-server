@@ -2,13 +2,12 @@ package no.kristiania.pgr200.assignment.one;
 
 import no.kristiania.pgr200.assignment.one.Enums.HttpMethod;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.HashMap;
-import java.util.Map;
 
 public class HttpRequest extends HttpCommon {
     private String host;
@@ -21,23 +20,37 @@ public class HttpRequest extends HttpCommon {
         this.port = port;
         this.requestPath = requestPath;
     }
-
-    public String getRequestPath() {
-        return requestPath;
-    }
-
-    public HttpMethod getMethod() {
-        return method;
-    }
-
     public HttpRequest(InputStream inputStream) throws IOException {
         String line = readLine(inputStream);
+        while (line.isEmpty()) {
+            line = readLine(inputStream);
+        }
         String[] parts = line.split(" ", 3);
 
         this.method = HttpMethod.valueOf(parts[0].toUpperCase());
         this.requestPath = parts[1];
         this.headers = readHeaders(inputStream);
         this.host = headers.get("Host");
+    }
+
+    public HttpRequest() {
+
+    }
+
+    public void setPort(int port) {
+        this.port = port;
+    }
+
+    public String getRequestPath() {
+        return requestPath;
+    }
+
+    public void setRequestPath(String requestPath) {
+        this.requestPath = requestPath;
+    }
+
+    public HttpMethod getMethod() {
+        return method;
     }
 
     public String getHost() {
@@ -49,19 +62,15 @@ public class HttpRequest extends HttpCommon {
         this.headers.put("Host", host);
     }
 
-    public HttpRequest() {
-
-    }
-
     public HttpResponse execute() {
         HttpResponse response = null;
 
-        try(Socket socket = new Socket(host, port)){
+        try (Socket socket = new Socket(host, port)) {
 
-            if(!headers.containsKey("Host")){
+            if (!headers.containsKey("Host")) {
                 headers.put("Host", host);
             }
-            if(!headers.containsKey("Connection")){
+            if (!headers.containsKey("Connection")) {
                 headers.put("Connection", "close");
             }
             OutputStream outputStream = socket.getOutputStream();

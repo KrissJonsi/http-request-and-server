@@ -10,17 +10,22 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class HttpServer {
+    private int port;
+    private boolean listening = true;
 
     public static void main(String[] args) {
         HttpServer server = new HttpServer();
-        server.runServer(8080);
+        try {
+            server.runServer(8080);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void listen(ServerSocket serverSocket) throws IOException {
-        while (true) {
-            Socket socket = serverSocket.accept();
-            new Thread(() -> {
-                try {
+        new Thread(() -> {
+            while (listening) {
+                try (Socket socket = serverSocket.accept()) {
                     HttpRequest request = new HttpRequest(socket.getInputStream());
                     System.out.println(String.format("%s %s", request.getMethod().name(), request.getRequestPath()));
                     HttpResponse response = new HttpResponse();
@@ -34,20 +39,26 @@ public class HttpServer {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-            }).start();
-        }
+            }
+        }).start();
     }
 
-    public void runServer() {
+    public void runServer() throws IOException {
         runServer(0);
     }
 
-    public void runServer(int port) {
-        try (ServerSocket socket = new ServerSocket(port)) {
-            System.out.println("Server now running on port: " + socket.getLocalPort());
-            listen(socket);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public void runServer(int port) throws IOException {
+        ServerSocket socket = new ServerSocket(port);
+        this.port = socket.getLocalPort();
+        System.out.println("Server now running on port: " + socket.getLocalPort());
+        listen(socket);
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    public void stop() {
+        this.listening = false;
     }
 }

@@ -60,7 +60,7 @@ public abstract class HttpCommon {
         writeHeaders(stream);
         byte[] body = new byte[]{};
         if (this.body != null) {
-            this.body.getBytes("UTF-8");
+            body = this.body.getBytes("UTF-8");
         }
 
         if (body.length > 0) {
